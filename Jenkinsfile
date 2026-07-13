@@ -30,6 +30,15 @@ pipeline {
                 }
             }
         }
+
+        stage('Run Backend Container') {
+            steps {
+                sh '''
+                docker rm -f resume-api || true
+                docker run -d --name resume-api -p 8000:8000 ai-resume-screening-backend
+                '''
+            }
+        }
     }
 
     post {
