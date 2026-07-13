@@ -1,94 +1,57 @@
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+
 import "./App.css";
 
+import Dashboard from "./components/Dashboard";
+import SearchBar from "./components/SearchBar";
+import UploadResume from "./components/UploadResume";
+import ResultCard from "./components/ResultCard";
+import Leaderboard from "./components/Leaderboard";
+import Filter from "./components/Filter";
+
 function App() {
-  const [jobDescription, setJobDescription] = useState("");
-  const [file, setFile] = useState(null);
-  const [result, setResult] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const [result, setResult] = useState(null);
 
-    const formData = new FormData();
-    formData.append("job_description", jobDescription);
-    formData.append("file", file);
+    const [searchResults, setSearchResults] = useState([]);
 
-    try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/screen-resume",
-        formData
-      );
+    return (
 
-      setResult(response.data);
-    } catch (error) {
-      console.error(error);
-      alert("Error while screening resume.");
-    }
-  };
+        <div className="App">
 
-  return (
-    <div className="container">
-      <h1>AI Resume Screening Platform</h1>
+            <div className="container">
 
-      <form onSubmit={handleSubmit}>
-        <textarea
-          placeholder="Enter Job Description"
-          rows="6"
-          value={jobDescription}
-          onChange={(e) => setJobDescription(e.target.value)}
-        />
+                <h1 align="center">
+                    AI Resume Screening System
+                </h1>
 
-        <br />
+                <Dashboard />
 
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
+                <SearchBar
+                    setSearchResults={setSearchResults}
+                />
+                <Filter
+    setSearchResults={setSearchResults}
+/>
 
-        <br /><br />
+                <UploadResume
+                    setResult={setResult}
+                />
 
-        <button type="submit">
-          Analyze Resume
-        </button>
-      </form>
+                <ResultCard
+                    result={result}
+                />
 
-      {result && (
-        <div className="result">
-          <h2>Result</h2>
+                <Leaderboard
+                    resumes={searchResults}
+                />
 
-          <p>
-            <b>Filename:</b> {result.filename}
-          </p>
+            </div>
 
-          <p>
-            <b>Match Score:</b> {result.match_score}%
-          </p>
-
-          <p>
-            <b>Matched Skills:</b>
-          </p>
-
-          <ul>
-            {result.matched_skills.map((skill, index) => (
-              <li key={index}>{skill}</li>
-            ))}
-          </ul>
-
-          <p>
-            <b>Missing Skills:</b>
-          </p>
-
-          <ul>
-            {result.missing_skills.map((skill, index) => (
-              <li key={index}>{skill}</li>
-            ))}
-          </ul>
         </div>
-      )}
-    </div>
-  );
+
+    );
+
 }
 
 export default App;
