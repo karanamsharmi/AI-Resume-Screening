@@ -17,7 +17,7 @@ function UploadResume({ setResult }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/screen-resume",
+        "http://107.20.129.72:8000/screen-resume",
         formData,
         {
           headers: {
