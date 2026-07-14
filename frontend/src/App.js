@@ -19,9 +19,9 @@ function App() {
 
         <div className="App">
 
-            <div className="container">
+            <div>
 
-                <h1 align="center">
+                <h1 align="center" className="gradient-text" style={{ fontSize: '3rem', marginBottom: '40px' }}>
                     AI Resume Screening System
                 </h1>
 

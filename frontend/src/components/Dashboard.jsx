@@ -33,27 +33,32 @@ function Dashboard() {
     }
 
     return (
-
-        <div>
-
-            <h2>Dashboard</h2>
-
-            <p>Total Resumes : {stats.total_resumes}</p>
-
-            <p>Highest Score : {stats.highest_score}</p>
-
-            <p>Lowest Score : {stats.lowest_score}</p>
-
-            <p>Average Score : {stats.average_score}</p>
-
-            <p>Selected Candidates : {stats.selected_candidates}</p>
-
-            <p>Rejected Candidates : {stats.rejected_candidates}</p>
-
+        <div style={{ marginBottom: '40px' }}>
+            <h2 style={{ marginBottom: '20px' }}>Dashboard</h2>
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '20px'
+            }}>
+                <div className="glass-panel" style={{ textAlign: 'center', padding: '20px' }}>
+                    <h3 style={{ color: 'var(--text-secondary)', margin: '0 0 10px 0', fontSize: '14px', textTransform: 'uppercase' }}>Total Resumes</h3>
+                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--accent-primary)' }}>{stats.total_resumes}</div>
+                </div>
+                <div className="glass-panel" style={{ textAlign: 'center', padding: '20px' }}>
+                    <h3 style={{ color: 'var(--text-secondary)', margin: '0 0 10px 0', fontSize: '14px', textTransform: 'uppercase' }}>Highest Score</h3>
+                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--accent-success)' }}>{stats.highest_score}</div>
+                </div>
+                <div className="glass-panel" style={{ textAlign: 'center', padding: '20px' }}>
+                    <h3 style={{ color: 'var(--text-secondary)', margin: '0 0 10px 0', fontSize: '14px', textTransform: 'uppercase' }}>Average Score</h3>
+                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--accent-secondary)' }}>{stats.average_score}</div>
+                </div>
+                <div className="glass-panel" style={{ textAlign: 'center', padding: '20px' }}>
+                    <h3 style={{ color: 'var(--text-secondary)', margin: '0 0 10px 0', fontSize: '14px', textTransform: 'uppercase' }}>Selected</h3>
+                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--accent-primary)' }}>{stats.selected_candidates}</div>
+                </div>
+            </div>
         </div>
-
     );
-
 }
 
 export default Dashboard;

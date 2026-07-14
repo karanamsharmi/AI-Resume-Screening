@@ -26,26 +26,25 @@ function SearchBar({ setSearchResults }) {
     }
 
     return (
-
-        <div>
-
-            <h2>Search Resume</h2>
-
-            <input
-                type="text"
-                placeholder="Search by Name, Email or Skill"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-            />
-
-            <button
-                onClick={searchResume}
-            >
-                Search
-            </button>
-
+        <div className="glass-panel" style={{ marginBottom: '20px' }}>
+            <h2 style={{ marginBottom: '15px' }}>Search Resumes</h2>
+            <div style={{ display: 'flex', gap: '10px' }}>
+                <input
+                    type="text"
+                    placeholder="Search by Name, Email or Skill..."
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    style={{ flex: 1, padding: '12px 15px', borderRadius: '8px', border: '1px solid var(--panel-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)', outline: 'none' }}
+                />
+                <button
+                    className="btn-primary"
+                    style={{ marginTop: 0 }}
+                    onClick={searchResume}
+                >
+                    Search
+                </button>
+            </div>
         </div>
-
     );
 
 }

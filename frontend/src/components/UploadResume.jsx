@@ -17,7 +17,7 @@ function UploadResume({ setResult }) {
 
     try {
       const response = await axios.post(
-        "http://54.234.71.29:8000/screen-resume",
+        "http://107.20.129.72:8000/screen-resume",
         formData,
         {
           headers: {
@@ -34,30 +34,30 @@ function UploadResume({ setResult }) {
   };
 
   return (
-    <div>
-      <h2>AI Resume Screening</h2>
+    <div className="glass-panel" style={{ marginBottom: '40px' }}>
+      <h2 style={{ marginBottom: '20px' }}>Screen a New Candidate</h2>
 
-      <textarea
-        rows="8"
-        cols="70"
-        placeholder="Paste Job Description"
-        value={jobDescription}
-        onChange={(e) => setJobDescription(e.target.value)}
-      />
+      <div style={{ marginBottom: '20px' }}>
+        <textarea
+          rows="6"
+          placeholder="Paste Job Description here..."
+          value={jobDescription}
+          onChange={(e) => setJobDescription(e.target.value)}
+        />
+      </div>
 
-      <br />
-      <br />
+      <div style={{ marginBottom: '20px', padding: '20px', border: '1px dashed var(--panel-border)', borderRadius: '12px', background: 'rgba(0,0,0,0.1)', textAlign: 'center' }}>
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={(e) => setFile(e.target.files[0])}
+          style={{ width: '100%', maxWidth: '300px' }}
+        />
+      </div>
 
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
-
-      <br />
-      <br />
-
-      <button onClick={uploadResume}>Analyze Resume</button>
+      <div style={{ textAlign: 'center' }}>
+        <button className="btn-primary" onClick={uploadResume}>Analyze Resume</button>
+      </div>
     </div>
   );
 }
