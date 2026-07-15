@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (npm ci is faster and more reliable than npm install)
-RUN npm ci --only=production && \
+# Install dependencies with npm install to handle lock file sync issues
+RUN npm install --omit=dev && \
     npm cache clean --force
 
 # Copy source code
