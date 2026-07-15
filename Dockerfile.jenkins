@@ -1,9 +1,17 @@
-FROM jenkins/jenkins:lts
+# Lightweight Jenkins image with Docker support - Optimized for EC2
+FROM jenkins/jenkins:lts-alpine
 
 USER root
 
-RUN apt-get update && \
-    apt-get install -y docker.io && \
-    apt-get clean
+# Install Docker CLI only (not Docker daemon - use host Docker)
+RUN apk add --no-cache \
+    docker-cli \
+    docker-compose \
+    git \
+    curl \
+    bash
+
+# Allow Jenkins to access host Docker socket
+RUN addgroup jenkins docker
 
 USER jenkins
