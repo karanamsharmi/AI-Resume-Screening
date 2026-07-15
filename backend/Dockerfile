@@ -3,11 +3,13 @@ FROM python:3.12-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies only in builder stage
+# Install build dependencies including g++ for C++ compilation
 RUN apk add --no-cache --virtual .build-deps \
     gcc \
+    g++ \
     musl-dev \
-    linux-headers
+    linux-headers \
+    libffi-dev
 
 COPY requirements.txt .
 
@@ -20,11 +22,13 @@ FROM python:3.12-alpine
 
 WORKDIR /app
 
-# Install only runtime dependencies (remove build tools)
+# Install runtime dependencies including C++ standard library
 RUN apk add --no-cache \
     libffi \
     libssl3 \
-    ca-certificates
+    ca-certificates \
+    libstdc++ \
+    gcompat
 
 # Copy only Python packages from builder
 COPY --from=builder /root/.local /root/.local
