@@ -1,53 +1,56 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        COMPOSE_FILE = 'docker-compose.yml'
+    }
 
-        stage('Checkout Source') {
+    stages {
+        stage('Checkout') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/nithin05060423/AI-Resume-Screening.git'
+                git branch: 'main', url: 'https://github.com/karanamsharmi/AI-Resume-Screening.git'
             }
         }
 
         stage('Show Workspace') {
             steps {
-                sh 'pwd'
-                sh 'ls -la'
+                sh 'pwd && ls -la'
             }
         }
 
-        stage('Check Docker') {
+        stage('Verify Docker') {
             steps {
-                sh 'docker --version'
+                sh 'docker --version || true'
+                sh 'docker compose version || docker-compose --version || true'
             }
         }
 
-        stage('Build Backend Image') {
+        stage('Build Images') {
             steps {
-                dir('backend') {
-                    sh 'docker build -t ai-resume-screening-backend .'
-                }
+                sh 'docker compose build --parallel'
             }
         }
 
-        stage('Run Backend Container') {
+        stage('Deploy') {
             steps {
                 sh '''
-                docker rm -f resume-api || true
-                docker run -d --name resume-api -p 8000:8000 ai-resume-screening-backend
+                # stop and remove previous containers, recreate with new images
+                docker compose down || true
+                docker compose up -d --remove-orphans --build
                 '''
+            }
+        }
+
+        stage('Smoke Test') {
+            steps {
+                sh 'sleep 3'
+                sh 'curl -f http://localhost:8000/ || true'
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline completed successfully.'
-        }
-
-        failure {
-            echo 'Pipeline failed.'
-        }
+        success { echo 'Pipeline completed successfully.' }
+        failure { echo 'Pipeline failed.' }
     }
 }
