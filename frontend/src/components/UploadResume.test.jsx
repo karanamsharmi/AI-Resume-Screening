@@ -1,11 +1,11 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import api from "../services/api";
 import UploadResume from "./UploadResume";
 
-// ─── Mock axios ────────────────────────────────────────────────────
-jest.mock("axios");
+// ─── Mock api ──────────────────────────────────────────────────────
+jest.mock("../services/api");
 
 // ─── Helpers ───────────────────────────────────────────────────────
 const createMockFile = (name = "resume.pdf", type = "application/pdf") => {
@@ -16,7 +16,7 @@ const mockSuccessResponse = {
   data: {
     success: true,
     filename: "resume.pdf",
-    resume_details: { name: "John Doe", email: "john@test.com" },
+    resume_details: { name: "John Doe", email: "john@test.com", education: [], experience: [] },
     match_score: 85,
     matched_skills: ["python", "git"],
     missing_skills: ["docker"],
@@ -60,7 +60,7 @@ describe("UploadResume Component", () => {
     fireEvent.click(screen.getByText("Analyze Resume"));
 
     expect(alertSpy).toHaveBeenCalledWith("Please select a resume.");
-    expect(axios.post).not.toHaveBeenCalled();
+    expect(api.post).not.toHaveBeenCalled();
     alertSpy.mockRestore();
   });
 
@@ -90,8 +90,8 @@ describe("UploadResume Component", () => {
   });
 
   // --- Successful upload -------------------------------------------
-  test("calls axios.post with form data on successful upload", async () => {
-    axios.post.mockResolvedValueOnce(mockSuccessResponse);
+  test("calls api.post with form data on successful upload", async () => {
+    api.post.mockResolvedValueOnce(mockSuccessResponse);
 
     render(<UploadResume setResult={mockSetResult} />);
 
@@ -110,17 +110,17 @@ describe("UploadResume Component", () => {
     fireEvent.click(screen.getByText("Analyze Resume"));
 
     await waitFor(() => {
-      expect(axios.post).toHaveBeenCalledTimes(1);
+      expect(api.post).toHaveBeenCalledTimes(1);
     });
 
-    const [url, formData, config] = axios.post.mock.calls[0];
-    expect(url).toBe("http://107.20.129.72:8000/screen-resume");
+    const [url, formData, config] = api.post.mock.calls[0];
+    expect(url).toBe("/screen-resume");
     expect(formData).toBeInstanceOf(FormData);
     expect(config.headers["Content-Type"]).toBe("multipart/form-data");
   });
 
   test("calls setResult with response data on success", async () => {
-    axios.post.mockResolvedValueOnce(mockSuccessResponse);
+    api.post.mockResolvedValueOnce(mockSuccessResponse);
 
     render(<UploadResume setResult={mockSetResult} />);
 
@@ -142,7 +142,7 @@ describe("UploadResume Component", () => {
   // --- Upload failure ----------------------------------------------
   test("shows alert on upload failure", async () => {
     const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
-    axios.post.mockRejectedValueOnce(new Error("Network Error"));
+    api.post.mockRejectedValueOnce(new Error("Network Error"));
 
     render(<UploadResume setResult={mockSetResult} />);
 
@@ -165,7 +165,7 @@ describe("UploadResume Component", () => {
 
   test("does not call setResult on failure", async () => {
     jest.spyOn(window, "alert").mockImplementation(() => {});
-    axios.post.mockRejectedValueOnce(new Error("Server Error"));
+    api.post.mockRejectedValueOnce(new Error("Server Error"));
 
     render(<UploadResume setResult={mockSetResult} />);
 
@@ -186,7 +186,7 @@ describe("UploadResume Component", () => {
 
   // --- FormData structure ------------------------------------------
   test("FormData contains file and job_description", async () => {
-    axios.post.mockResolvedValueOnce(mockSuccessResponse);
+    api.post.mockResolvedValueOnce(mockSuccessResponse);
 
     render(<UploadResume setResult={mockSetResult} />);
 
@@ -201,10 +201,10 @@ describe("UploadResume Component", () => {
     fireEvent.click(screen.getByText("Analyze Resume"));
 
     await waitFor(() => {
-      expect(axios.post).toHaveBeenCalledTimes(1);
+      expect(api.post).toHaveBeenCalledTimes(1);
     });
 
-    const formData = axios.post.mock.calls[0][1];
+    const formData = api.post.mock.calls[0][1];
     expect(formData.get("job_description")).toBe("Docker expert needed");
     expect(formData.get("file")).toBeInstanceOf(File);
   });

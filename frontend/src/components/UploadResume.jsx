@@ -1,9 +1,10 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 function UploadResume({ setResult }) {
   const [file, setFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const uploadResume = async () => {
     if (!file) {
@@ -15,9 +16,10 @@ function UploadResume({ setResult }) {
     formData.append("file", file);
     formData.append("job_description", jobDescription);
 
+    setLoading(true);
     try {
-      const response = await axios.post(
-        "http://107.20.129.72:8000/screen-resume",
+      const response = await api.post(
+        "/screen-resume",
         formData,
         {
           headers: {
@@ -30,6 +32,8 @@ function UploadResume({ setResult }) {
     } catch (error) {
       console.error(error);
       alert("Upload Failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,7 +60,21 @@ function UploadResume({ setResult }) {
       </div>
 
       <div style={{ textAlign: 'center' }}>
-        <button className="btn-primary" onClick={uploadResume}>Analyze Resume</button>
+        <button 
+          className="btn-primary" 
+          onClick={uploadResume} 
+          disabled={loading}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', opacity: loading ? 0.7 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+        >
+          {loading ? (
+            <>
+              <span className="spinner"></span>
+              Processing Resume...
+            </>
+          ) : (
+            "Analyze Resume"
+          )}
+        </button>
       </div>
     </div>
   );
