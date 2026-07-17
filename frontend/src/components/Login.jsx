@@ -18,7 +18,8 @@ function Login({ onLogin }) {
         navigate('/dashboard');
       }
     } catch (err) {
-      alert("Login failed");
+      const message = err.response?.data?.detail || err.response?.data?.message || err.message || "Login failed";
+      alert(`Login failed: ${message}`);
       console.error(err);
     } finally {
       setLoading(false);
