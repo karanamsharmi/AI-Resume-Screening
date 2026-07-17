@@ -88,14 +88,26 @@ def delete_resume(db: Session, resume_id: int):
 
 
 # -----------------------------
+# Delete All Resumes
+# -----------------------------
+def delete_all_resumes(db: Session):
+    db.query(Resume).delete(synchronize_session=False)
+    db.commit()
+
+    return {
+        "message": "All resumes deleted successfully"
+    }
+
+
+# -----------------------------
 # Leaderboard
 # -----------------------------
-def get_leaderboard(db: Session):
+def get_leaderboard(db: Session, limit: int = 10):
 
     return (
         db.query(Resume)
         .order_by(Resume.score.desc())
-        .limit(10)
+        .limit(limit)
         .all()
     )
 

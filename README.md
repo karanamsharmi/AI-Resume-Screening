@@ -223,6 +223,28 @@ Add screenshots here:
 
 ---
 
+## Running Frontend Tests in CI
+
+The frontend tests disable auth gating during test runs by using a global test helper.
+You can control this behavior via environment variables.
+
+- CI (common): set `CI=true` in your environment — the test helper will disable auth gating.
+- Explicit flag: set `REACT_APP_TEST_REQUIRE_AUTH=false` to disable auth gating during tests.
+
+Example GitHub Actions step to run frontend tests (disables auth gating):
+
+```yaml
+- name: Run frontend tests
+	run: |
+		npm --prefix frontend ci
+		REACT_APP_TEST_REQUIRE_AUTH=false npm --prefix frontend test -- --watchAll=false
+	env:
+		CI: true
+```
+
+Alternatively, the helper will also disable auth when `NODE_ENV=test` (Jest runs with this by default), so running tests locally with `npm --prefix frontend test` will also work.
+
+
 # Author
 
 **Nithin Goli**

@@ -119,6 +119,45 @@ describe("UploadResume Component", () => {
     expect(config.headers["Content-Type"]).toBe("multipart/form-data");
   });
 
+  test("sends multiple files to bulk endpoint when several resumes are selected", async () => {
+    const multiResponse = {
+      data: {
+        success: true,
+        results: [
+          mockSuccessResponse.data,
+          {
+            ...mockSuccessResponse.data,
+            filename: "resume2.pdf",
+            resume_details: { ...mockSuccessResponse.data.resume_details, name: "Jane Doe", email: "jane@test.com" }
+          }
+        ]
+      }
+    };
+    api.post.mockResolvedValueOnce(multiResponse);
+
+    render(<UploadResume setResult={mockSetResult} />);
+
+    const textarea = screen.getByPlaceholderText("Paste Job Description here...");
+    await userEvent.type(textarea, "Python developer");
+
+    const fileInput = document.querySelector('input[type="file"]');
+    const file1 = createMockFile("resume1.pdf");
+    const file2 = createMockFile("resume2.pdf");
+    await userEvent.upload(fileInput, [file1, file2]);
+
+    fireEvent.click(screen.getByText("Analyze Resume"));
+
+    await waitFor(() => {
+      expect(api.post).toHaveBeenCalledTimes(1);
+    });
+
+    const [url, formData] = api.post.mock.calls[0];
+    expect(url).toBe("/screen-resumes");
+    expect(formData.getAll("files")).toHaveLength(2);
+    expect(formData.get("job_description")).toBe("Python developer");
+    expect(mockSetResult).toHaveBeenCalledWith(multiResponse.data.results[0]);
+  });
+
   test("calls setResult with response data on success", async () => {
     api.post.mockResolvedValueOnce(mockSuccessResponse);
 

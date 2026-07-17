@@ -9,7 +9,7 @@ from fastapi import (
 
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db
+from app.dependencies import get_db, get_current_user
 
 from app.services.pdf_service import (
     save_pdf,
@@ -24,6 +24,7 @@ from app.crud import (
     get_all_resumes,
     get_resume_by_id,
     delete_resume,
+    delete_all_resumes,
     get_leaderboard,
     search_resumes,
     filter_resumes
@@ -39,7 +40,8 @@ router = APIRouter(tags=["Resume"])
 async def screen_resume(
     job_description: str = Form(...),
     file: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user)
 ):
 
     file_path = await save_pdf(file)
@@ -83,6 +85,60 @@ async def screen_resume(
     }
 
 
+
+@router.post("/screen-resumes")
+async def screen_resumes(
+    job_description: str = Form(...),
+    files: list[UploadFile] = File(...),
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+
+    results = []
+
+    for file in files:
+        file_path = await save_pdf(file)
+
+        resume_text = extract_text(file_path)
+
+        result = calculate_score(
+            job_description=job_description,
+            resume_text=resume_text
+        )
+
+        details = result["resume"]
+
+        recommendations = get_recommendations(
+            result["missing"]
+        )
+
+        save_resume(
+            db=db,
+            filename=file.filename,
+            name=details["name"],
+            email=details["email"],
+            phone=details["phone"],
+            education=", ".join(details["education"]),
+            experience=", ".join(details["experience"]),
+            jd=job_description,
+            resume_text=resume_text,
+            score=result["score"],
+            matched=result["matched"],
+            missing=result["missing"]
+        )
+
+        results.append({
+            "filename": file.filename,
+            "resume_details": details,
+            "match_score": result["score"],
+            "matched_skills": result["matched"],
+            "missing_skills": result["missing"],
+            "recommendations": recommendations
+        })
+
+    return {"success": True, "results": results}
+
+
 # ==========================================
 # All Resumes
 # ==========================================
@@ -94,13 +150,25 @@ def get_resumes(
 
 
 # ==========================================
+# Clear Resume Data
+# ==========================================
+@router.delete("/resumes/reset")
+def delete_resumes(
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    return delete_all_resumes(db)
+
+
+# ==========================================
 # Leaderboard
 # ==========================================
 @router.get("/leaderboard")
 def leaderboard(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    limit: int = 10
 ):
-    return get_leaderboard(db)
+    return get_leaderboard(db, limit)
 
 
 # ==========================================
