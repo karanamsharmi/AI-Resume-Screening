@@ -32,10 +32,14 @@ function Leaderboard({ resumes, refreshKey }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h2 style={{ margin: 0 }}>Leaderboard</h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <label style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Show Top:</label>
-                    <select 
-                        value={candidateLimit} 
-                        onChange={(e) => setCandidateLimit(parseInt(e.target.value))}
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    Show Top:
+                    <input
+                        type="number"
+                        list="topOptions"
+                        value={candidateLimit}
+                        min={1}
+                        onChange={(e) => setCandidateLimit(Math.max(1, Number(e.target.value) || 1))}
                         style={{
                             padding: '8px 12px',
                             borderRadius: '6px',
@@ -44,17 +48,20 @@ function Leaderboard({ resumes, refreshKey }) {
                             color: 'var(--text-primary)',
                             fontFamily: "'Inter', sans-serif",
                             fontSize: '14px',
-                            cursor: 'pointer',
+                            width: '72px',
+                            cursor: 'text',
                             transition: 'border-color 0.3s ease'
                         }}
-                    >
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="15">15</option>
-                        <option value="20">20</option>
-                        <option value="25">25</option>
-                        <option value="30">30</option>
-                    </select>
+                    />
+                    <datalist id="topOptions">
+                        <option value="5" />
+                        <option value="10" />
+                        <option value="15" />
+                        <option value="20" />
+                        <option value="25" />
+                        <option value="30" />
+                    </datalist>
+                </label>
                 </div>
                 {loading && <div className="spinner" style={{ width: '16px', height: '16px', borderThickness: '2px' }}></div>}
             </div>
