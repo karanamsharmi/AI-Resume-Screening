@@ -17,7 +17,7 @@ import api from "./services/api";
 
 function App() {
     const [result, setResult] = useState(null);
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState(null);
     const [leaderboardRefreshKey, setLeaderboardRefreshKey] = useState(0);
     const [dashboardResetKey, setDashboardResetKey] = useState(0);
     const [filterResetKey, setFilterResetKey] = useState(0);

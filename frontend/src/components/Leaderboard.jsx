@@ -23,10 +23,9 @@ function Leaderboard({ resumes, refreshKey }) {
         }
     }
 
-    const data =
-        resumes === undefined
-            ? leaderboard
-            : resumes;
+    const data = resumes == null
+        ? leaderboard
+        : resumes.slice(0, candidateLimit);
 
     return (
         <div className="glass-panel" style={{ marginBottom: '40px' }}>
