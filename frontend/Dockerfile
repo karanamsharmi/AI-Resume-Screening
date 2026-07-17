@@ -16,6 +16,8 @@ RUN npm install && \
 COPY . .
 
 # Build React application
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8000}
 RUN npm run build
 
 # Debug: verify build output exists
@@ -33,8 +35,7 @@ RUN npm install -g serve@14 && npm cache clean --force
 COPY --from=builder /app/build ./build
 
 # Set environment variables
-ENV NODE_ENV=production \
-    REACT_APP_API_URL=http://localhost:8000
+ENV NODE_ENV=production
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \

@@ -1,7 +1,11 @@
 import axios from "axios";
 
+const defaultBaseURL = typeof window !== "undefined"
+  ? `${window.location.protocol}//${window.location.hostname}:8000`
+  : "http://localhost:8000";
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:8000",
+  baseURL: process.env.REACT_APP_API_URL || defaultBaseURL,
 });
 
 // Add auth token automatically and preserve FormData uploads.
