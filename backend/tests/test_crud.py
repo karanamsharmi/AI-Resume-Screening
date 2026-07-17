@@ -15,6 +15,7 @@ from app.crud import (
     get_all_resumes,
     get_resume_by_id,
     delete_resume,
+    delete_all_resumes,
 )
 from app.models import Resume
 
@@ -210,3 +211,28 @@ class TestDeleteResume:
     def test_delete_non_existing_returns_not_found(self, db_session):
         result = delete_resume(db_session, 99999)
         assert result["message"] == "Resume not found"
+
+
+class TestDeleteAllResumes:
+    """Tests for delete_all_resumes."""
+
+    def test_delete_all_resumes_clears_database(self, db_session):
+        for i in range(3):
+            save_resume(
+                db=db_session,
+                filename=f"resume_{i}.pdf",
+                name=f"Candidate {i}",
+                email=f"candidate{i}@test.com",
+                phone="9000000000",
+                education="B.TECH",
+                experience="1",
+                jd="jd",
+                resume_text="text",
+                score=50.0 + i * 10,
+                matched=["python"],
+                missing=[],
+            )
+
+        result = delete_all_resumes(db_session)
+        assert result["message"] == "All resumes deleted successfully"
+        assert get_all_resumes(db_session) == []
