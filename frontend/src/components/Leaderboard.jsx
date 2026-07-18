@@ -23,9 +23,11 @@ function Leaderboard({ resumes, refreshKey }) {
         }
     }
 
-    const data = resumes == null
-        ? leaderboard
-        : resumes.slice(0, candidateLimit);
+    const entries = resumes == null ? leaderboard : resumes;
+    const data = entries
+        .slice()
+        .sort((a, b) => Number(b.score) - Number(a.score))
+        .slice(0, candidateLimit);
 
     return (
         <div className="glass-panel" style={{ marginBottom: '40px' }}>

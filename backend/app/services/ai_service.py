@@ -111,6 +111,11 @@ def extract_resume_details(text: str):
     }
 
 
+def has_skill(text: str, skill: str) -> bool:
+    pattern = r"\b" + re.escape(skill) + r"\b"
+    return re.search(pattern, text) is not None
+
+
 def calculate_score(
     job_description: str,
     resume_text: str
@@ -124,7 +129,7 @@ def calculate_score(
 
     for skill in SKILLS:
 
-        if skill in jd:
+        if has_skill(jd, skill):
 
             jd_skills.append(skill)
 
@@ -136,7 +141,7 @@ def calculate_score(
 
     for skill in jd_skills:
 
-        if skill in resume:
+        if has_skill(resume, skill):
 
             matched.append(skill)
 
